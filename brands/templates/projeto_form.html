@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container mt-4">
+        <div class="card">
+            <div class="card-body">               
+                <h2>Novo Projeto</h2>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+
+                    <h3>Pessoas</h3>
+                    {{ formset.management_form }}
+                    <div id="formset-area">
+                        {% for subform in formset %}
+                            <div class="form-bloco">
+                                {{ subform.as_p }}
+                                <button type="button" class="remove-form">Remover</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" id="add-form">Adicionar pessoa</button>
+                    <button type="submit">Salvar</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    let formsetArea = document.getElementById("formset-area");
+    let addButton = document.getElementById("add-form");
+    let totalForms = document.getElementById("id_participacao_set-TOTAL_FORMS");
+
+    function addRemoveEvent(button) {
+        button.addEventListener("click", function () {
+            button.parentElement.remove();
+            updateTotalForms();
+        });
+    }
+
+    function updateTotalForms() {
+        let forms = formsetArea.querySelectorAll(".form-bloco");
+        totalForms.value = forms.length;
+        forms.forEach((form, index) => {
+            form.querySelectorAll("input, select, textarea, label").forEach(el => {
+                if (el.name) el.name = el.name.replace(/-\d+-/, `-${index}-`);
+                if (el.id) el.id = el.id.replace(/-\d+-/, `-${index}-`);
+                if (el.htmlFor) el.htmlFor = el.htmlFor.replace(/-\d+-/, `-${index}-`);
+            });
+        });
+    }
+
+    addButton.addEventListener("click", function () {
+        let currentCount = parseInt(totalForms.value);
+        let newFormHtml = formsetArea
+            .querySelector(".form-bloco")
+            .outerHTML.replace(/-\d+-/g, `-${currentCount}-`)
+            .replace(/_\d+_/g, `_${currentCount}_`);
+
+        formsetArea.insertAdjacentHTML("beforeend", newFormHtml);
+
+        let newBlock = formsetArea.lastElementChild;
+        addRemoveEvent(newBlock.querySelector(".remove-form"));
+        totalForms.value = currentCount + 1;
+    });
+
+    // Ativa o evento de remover para blocos que já existem
+    document.querySelectorAll(".remove-form").forEach(addRemoveEvent);
+});
+</script>
+
+<style>
+.form-bloco {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 8px 0;
+}
+</style>
+
+{% endblock %}

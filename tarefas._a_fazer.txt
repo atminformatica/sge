@@ -1,0 +1,12 @@
+docker ja funcionando
+
+falta:
+
+JOGAR PROJETO NO GITHUB
+
+lembrando
+    sge original esta copiado na pasta rede
+
+    criei projetos pessoas e participacoes ta tudo no app brands aqui
+
+    se quizer desfazer so voltar a pasta sge que esta na pasta rede
