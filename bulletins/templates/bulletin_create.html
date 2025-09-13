@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3 class="display-6">Boletim de Ocorrência</h3>
+
+    <div class="card">
+        <div class="card-body">
+            <form method="post" class="form">
+                {% csrf_token %}
+                <div class="p-2 mb-4">
+                    {{ boletim_form.as_p }}
+                </div>
+
+                <div class="p-2 mb-4">
+                    {{ envolvimento_formset.management_form }}
+                    {% for form in envolvimento_formset %}
+                        <fieldset class="card p-2 mb-4">
+                            <legend>Envolvido {{ forloop.counter }}</legend>
+                            {{ form.envolvido_nome.label_tag }} {{ form.envolvido_nome }}
+                            {{ form.envolvido_naturalidade.label_tag }} {{ form.envolvido_naturalidade }}
+                            {{ form.envolvido_datanascimento.label_tag }} {{ form.envolvido_datanascimento }}
+                            {{ form.envolvido_endereco.label_tag }} {{ form.envolvido_endereco }}
+                            <!-- Adicione os outros campos aqui -->
+                            {{ form.tipo_envolvimento.label_tag }} {{ form.tipo_envolvimento }}
+                            {% if form.can_delete %}
+                                {{ form.DELETE }} Remover
+                            {% endif %}
+                        </fieldset>
+                        <br>
+
+                    {% endfor %}
+                    <button type="submit" name="adicionar_envolvido" class="btn btn-primary">Adicionar mais envolvidos</button>
+                </div>
+                <button type="submit" name="salvar" class="btn btn-success">Salvar Boletim</button>
+            </form>
+        </div>
+    </div>
+    <a href="{% url 'brands_list' %}" class="btn btn-secondary mt-3">Cancelar e voltar para lista de Boletins</a>
+</div>
+
+{% endblock %}
