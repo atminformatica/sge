@@ -21,7 +21,6 @@ class CategoryListView(LoginRequiredMixin, PermissionRequiredMixin, ListView):
             
         return queryset
     
-
 class CategoryCreateView(LoginRequiredMixin, PermissionRequiredMixin, CreateView):
     model = models.Category
     template_name = 'category_create.html'

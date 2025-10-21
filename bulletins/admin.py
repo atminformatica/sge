@@ -10,7 +10,7 @@ class BoletimEnvolvimentoInline(admin.TabularInline):
 
 @admin.register(Boletim)
 class BoletimAdmin(admin.ModelAdmin):
-    list_display = ['numero_bo', 'numero_bi', 'data_hora_inicio', 'classificacao', 'orgao']
+    list_display = ['numero_bi', 'numero_bo', 'data_hora_inicio', 'classificacao', 'orgao']
     search_fields = ['numero_bo', 'numero_bi', 'classificacao', 'destinatario']
     list_filter = ['classificacao', 'orgao', 'secao']
     inlines = [BoletimEnvolvimentoInline]

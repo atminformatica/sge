@@ -1,0 +1,181 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Boletim de Intervenção</title>
+    <style>
+        @page {
+            size: A4 portrait;
+            margin: 1cm;
+        }
+        body {
+            font-family: sans-serif;
+            font-size: 8pt;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            
+        }
+        th, td {
+            border: 1px solid #000;
+            padding: 2px;
+            text-align: left;
+            vertical-align: top;
+        }
+        td {           
+            padding-bottom: -3px;           
+        }
+        th {
+            background-color: #e0e0e0;
+            
+        }
+        .header-title {
+            text-align: center;
+            font-size: 10pt;
+            font-weight: bold;
+            background-color: white;
+        }       
+        .section-title {
+            background-color: #d0d0d0;
+            font-weight: bold;
+        }
+       
+    </style>
+</head>
+<body>
+    <table>
+        <thead>
+            <tr>
+                <td colspan="1" ><img src="{{caminho_local_logo}}"></td>
+                <th colspan="11" class="header-title"><br>BOLETIM DE INTERVENÇÃO<br>GUARDA CIVIL MUNICIPAL - CONSELHEIRO LAFAIETE <br></th>
+            </tr>
+            
+        </thead>
+        <tbody>
+            <tr>
+                <td colspan="12" class="section-title">1 - DO FATO</td>
+            </tr>
+            <tr>
+                <td colspan="3"><b>DATA:</b> <br> 14/03/25</td>
+                <td colspan="3"><b>NÚMERO BI:</b> <br> {{bulletin.numero_bi}}</td>
+                <td colspan="3"><b>NÚMERO BO:</b> <br> {{bulletin.numero_bo}}</td>
+                <td colspan="3"><b>CLASSIFICAÇÃO:</b> <br> {{bulletin.classificacao}}171</td>
+            </tr>
+            <tr>
+                <td colspan="5"><b>ENDEREÇO:</b><br>{{bulletin.endereco_dofato}}</td>
+                <td colspan="2"><b>NÚMERO:</b><br>{{bulletin.numero_dofato}}</td>
+                <td colspan="5"><b>BAIRRO:</b><br> {{bulletin.bairro_dofato}}</td>
+            </tr>
+            <tr>
+                <td colspan="3"><b>ÓRGÃO:</b> <br>{{bulletin.orgao}}</td>
+                <td colspan="3"><b>SEÇÃO:</b> <br>{{bulletin.secao}}</td>
+                <td colspan="3"><b>DATA/HORA INÍCIO:</b> <br>{{bulletin.data_hora_inicio|date:'d/m/Y H:i'}}</td>
+                <td colspan="3"><b>DATA/HORA TÉRMINO:</b> <br>{{bulletin.data_hora_termino|date:'d/m/Y H:i'}}</td>
+            </tr>
+            <tr>
+                <td colspan="12" class="section-title">2 - ENVOLVIDOS</td>
+            </tr>
+            {% comment %} obs: aqui envolvimentos é uma queryset de envolvimentos e nao um formset {% endcomment %}
+            {% for envolvimento in envolvimentos %}
+                <tr>
+                    <td colspan="12" class="section-title">Envolvido {{forloop.counter}}</td>
+                </tr>
+                <tr>
+                    <td colspan="6"><b>NOME:</b><br>{{envolvimento.envolvido.nome}}</td>
+                    <td colspan="3"><b>NATURALIDADE:</b><br>{{envolvimento.envolvido.naturalidade}}</td>
+                    <td colspan="3"><b>DATA DE NASCIMENTO:</b><br>{{envolvimento.envolvido.datanascimento|date:'d/m/Y'}}</td>
+                </tr>
+                <tr>
+                    <td colspan="5"><b>ENDEREÇO:</b><br>{{envolvimento.envolvido.endereco}}</td>
+                    <td colspan="2"><b>NÚMERO:</b><br>{{envolvimento.envolvido.numero}}</td>
+                    <td colspan="5"><b>BAIRRO:</b><br>{{envolvimento.envolvido.bairro}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><b>CIDADE:</b> <br>{{envolvimento.envolvido.cidade}}</td>
+                    <td colspan="2"><b>UF:</b> <br> {{envolvimento.envolvido.uf}}</td>
+                    <td colspan="3"><b>CEP:</b> <br>{{envolvimento.envolvido.cep}}</td>
+                    <td colspan="3"><b>TELEFONE:</b> <br> {{envolvimento.envolvido.telefone}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><b>ESTADO CIVIL:</b> <br> {{envolvimento.envolvido.estadocivil}}</td>
+                    <td colspan="2"><b>CPF:</b> <br>{{envolvimento.envolvido.cpf}}</td>
+                    <td colspan="3"><b>IDENTIDADE:</b> <br>{{envolvimento.envolvido.identidade}}</td>
+                    <td colspan="3"><b>PROFISSÃO:</b> <br>{{envolvimento.envolvido.profissao}}</td>
+                </tr>
+                <tr>
+                    <td colspan="4"><b>EMAIL:</b><br> {{envolvimento.envolvido.email}}</td>
+                    <td colspan="4"><b>TIPO ENVOLVIMENTO:</b><br>{{envolvimento.tipo_envolvimento}}</td>
+                    <td colspan="4"><b>ESCOLARIDADE:</b><br>{{envolvimento.envolvido.escolaridade}}</td>
+                </tr>
+            {% endfor %}
+            
+            {% comment %} envolvidos vazios apenas pra completar pagina {% endcomment %}
+            {% for x in array_envolvidosvazios %}
+                <tr>
+                    <td colspan="12" class="section-title">Envolvido {{x}}</td>
+                </tr>
+                <tr>
+                    <td colspan="6"><b>NOME:</b><br></td>
+                    <td colspan="3"><b>NATURALIDADE:</b><br></td>
+                    <td colspan="3"><b>DATA DE NASCIMENTO:</b><br></td>
+                </tr>
+                <tr>
+                    <td colspan="5"><b>ENDEREÇO:</b><br></td>
+                    <td colspan="2"><b>NÚMERO:</b><br></td>
+                    <td colspan="5"><b>BAIRRO:</b><br></td>
+                </tr>
+                <tr>
+                    <td colspan="4"><b>CIDADE:</b> <br></td>
+                    <td colspan="2"><b>UF:</b> <br></td>
+                    <td colspan="3"><b>CEP:</b> <br></td>
+                    <td colspan="3"><b>TELEFONE:</b> <br></td>
+                </tr>
+                <tr>
+                    <td colspan="4"><b>ESTADO CIVIL:</b> <br></td>
+                    <td colspan="2"><b>CPF:</b> <br></td>
+                    <td colspan="3"><b>IDENTIDADE:</b> <br></td>
+                    <td colspan="3"><b>PROFISSÃO:</b> <br></td>
+                </tr>
+                <tr>
+                    <td colspan="4"><b>EMAIL:</b><br></td>
+                    <td colspan="4"><b>TIPO ENVOLVIMENTO:</b><br></td>
+                    <td colspan="4"><b>ESCOLARIDADE:</b><br></td>
+                </tr>
+            {% endfor %}
+
+            <tr>
+                <td colspan="12"><b>DESTINATÁRIO:</b><br> {{bulletin.destinatario}}</td>
+            </tr>
+            <tr>
+                <td colspan="12" class="section-title">3 - HISTÓRICO</td>
+            </tr>
+            <tr>
+                <td colspan="12"><b>HISTÓRICO:</b><br> 
+                    {{bulletin.historico|linebreaksbr}}  
+                    {% for i in linhas_para_loop %}
+                        <br>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="12" class="section-title">4 - RELATOR</td>
+            </tr>
+            <tr>
+                <td colspan="5"><b>NOME:</b><br> {{bulletin.relatornome}}</td>
+                <td colspan="3"><b>DOCUMENTO:</b><br> {{bulletin.relatordocumento}}</td>                
+                <td colspan="4"><b>RÚBRICA:</b><br> </td>
+            </tr>
+            <tr>
+                <td colspan="12" class="section-title">5 - RECIBO DA AUTORIDADE A QUE SE DESTINA / RESPONSÁVEL REPRESENTANTE</td>
+            </tr>
+            <tr>
+                <td colspan="5"><b>NOME:</b><br>{{bulletin.autoridadenome}}</td>
+                <td colspan="3"><b>DOCUMENTO:</b><br> {{bulletin.autoridadedocumento}}</td>
+                <td colspan="4"><b>RÚBRICA:</b><br> </td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

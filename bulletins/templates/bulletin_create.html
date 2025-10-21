@@ -1,42 +1,312 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
-<div class="container mt-4">
-    <h3 class="display-6">Boletim de Ocorrência</h3>
-
+    
     <div class="card">
         <div class="card-body">
+            <div class="row mb-2">
+                <!-- Coluna para a imagem -->
+                <div class="col-md-1">
+                    <img src="{% static 'images/brasao.png' %}" alt="Logo da Empresa" class="img-fluid">
+                </div>
+                <!-- Coluna para o nome da empresa -->
+                <div class="col-md-11 text-center">
+                    <h4>BOLETIM DE INTERVENÇAO</h4>
+                    <h4>GUARDA MUNICIPAL - CONSELHEIRO LAFAIETE</h4>
+                </div>
+            </div>   
             <form method="post" class="form">
                 {% csrf_token %}
-                <div class="p-2 mb-4">
-                    {{ boletim_form.as_p }}
-                </div>
+                        
+                <div class="accordion mb-2" id="formAccordion">
+                    <!-- Seção 1 do fato-->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading1">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapse1" aria-expanded="true">
+                            1 - DO FATO
+                            </button>
+                        </h2>
+                        <div id="collapse1" class="accordion-collapse collapse show" data-bs-parent="#formAccordion">
+                            <div class="accordion-body">
+                                <div class="row">                                     
+                                    <div class="col-12 col-md-4 col-lg-3 mb-3">
+                                        <label for="{{ boletim_form.created_at.id_for_label }}" class="form-label"><small>Data Registro (automático)</small></label>
+                                        {% comment %} {{ boletim_form.created_at }} {% endcomment %}
+                                        {{ boletim_form.created_at.value }}
+                                        <input disabled name="{{ boletim_form.created_at.name }}" value="{{ boletim_form.created_at.value }}" readonly class="form-control form-control-sm">
+                                    </div>
 
-                <div class="p-2 mb-4">
-                    {{ envolvimento_formset.management_form }}
-                    {% for form in envolvimento_formset %}
-                        <fieldset class="card p-2 mb-4">
-                            <legend>Envolvido {{ forloop.counter }}</legend>
-                            {{ form.envolvido_nome.label_tag }} {{ form.envolvido_nome }}
-                            {{ form.envolvido_naturalidade.label_tag }} {{ form.envolvido_naturalidade }}
-                            {{ form.envolvido_datanascimento.label_tag }} {{ form.envolvido_datanascimento }}
-                            {{ form.envolvido_endereco.label_tag }} {{ form.envolvido_endereco }}
-                            <!-- Adicione os outros campos aqui -->
-                            {{ form.tipo_envolvimento.label_tag }} {{ form.tipo_envolvimento }}
-                            {% if form.can_delete %}
-                                {{ form.DELETE }} Remover
-                            {% endif %}
-                        </fieldset>
-                        <br>
+                                    <div class="col-12 col-md-4 col-lg-3 mb-3">
+                                        <label for="{{ boletim_form.numero_bi.id_for_label }}" class="form-label"><small>Número BI-GCM:</small> <span class="text-danger">*</span></label>
+                                        {% comment %} {{ boletim_form.numero_bi }} {% endcomment %}
+                                        <input name="{{ boletim_form.numero_bi.name }}" value="{{ boletim_form.numero_bi.value|default:"" }}"  class="form-control form-control-sm {% if boletim_form.numero_bi.errors %} is-invalid {% endif %}">
+                                        {%for error in boletim_form.numero_bi.errors %}
+                                            <div class="invalid-feedback">
+                                                {{error}}
+                                            </div>
+                                        {%endfor%}
+                                    </div>
 
-                    {% endfor %}
-                    <button type="submit" name="adicionar_envolvido" class="btn btn-primary">Adicionar mais envolvidos</button>
+                                    <div class="col-12 col-md-4 col-lg-3 mb-3">
+                                        <label for="{{ boletim_form.numero_bo.id_for_label }}" class="form-label"><small>Número BO-PMMG:</small></label>
+                                        {{ boletim_form.numero_bo }}
+                                    </div>
+                                    <div class="col-12 col-md-4 col-lg-3 mb-3">
+                                        <label for="{{ boletim_form.classificacao.id_for_label }}" class="form-label"><small>Classificação:</small></label>
+                                        {{ boletim_form.classificacao }}
+                                    </div>
+                                </div>       
+                                <div class="row">
+                                    <div class="col-12 col-md-5 col-lg-5 mb-3">
+                                        <label for="{{ boletim_form.endereco_dofato.id_for_label }}" class="form-label"><small>Endereço:</small></label>
+                                        {{ boletim_form.endereco_dofato }}
+                                    </div>
+
+                                    <div class="col-12 col-md-2 col-lg-2 mb-3">
+                                        <label for="{{ boletim_form.numero_dofato.id_for_label }}" class="form-label"><small>Numero:</small></label>
+                                        {{ boletim_form.numero_dofato }}
+                                    </div>
+
+                                    <div class="col-12 col-md-5 col-lg-5 mb-3">
+                                        <label for="{{ boletim_form.bairro_dofato.id_for_label }}" class="form-label"><small>Bairro:</small></label>
+                                        {{ boletim_form.bairro_dofato }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12 col-md-4 col-lg-3 mb-3">
+                                        <label for="{{ boletim_form.orgao.id_for_label }}" class="form-label"><small>Órgão:</small></label>
+                                        {{ boletim_form.orgao }}
+                                    </div>
+
+                                    <div class="col-12 col-md-4 col-lg-3 mb-3">
+                                        <label for="{{ boletim_form.secao.id_for_label }}" class="form-label"><small>Seção:</small></label>
+                                        {{ boletim_form.secao }}
+                                    </div>
+
+                                    <div class="col-12 col-md-4 col-lg-3 mb-3">
+                                        <label for="{{ boletim_form.data_hora_inicio.id_for_label }}" class="form-label"><small>Data/Hora Início:</small></label>
+                                        {{ boletim_form.data_hora_inicio }}
+                                    </div>
+                                    <div class="col-12 col-md-4 col-lg-3 mb-3">
+                                        <label for="{{ boletim_form.data_hora_termino.id_for_label }}" class="form-label"><small>Data/Hora Término:</small></label>
+                                        {{ boletim_form.data_hora_termino }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Seção 2 Envolvidos-->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading2">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse2" aria-expanded="false">
+                            2 - ENVOLVIDOS
+                            </button>
+                        </h2>
+                        <div id="collapse2" class="accordion-collapse collapse" data-bs-parent="#formAccordion">
+                            <div class="accordion-body">
+                                <div class="p-2 mb-2">
+                                    {{ envolvimento_formset.management_form }}
+                                    {% for form in envolvimento_formset %}
+
+                                        <fieldset class="card ">
+                                            <legend>Envolvido {{ forloop.counter }}</legend>
+                                            <div class="row">                                     
+                                                <div class="col-12 col-md-5 col-lg-5">
+                                                    <label for="{{ form.envolvido_nome.id_for_label }}" class="form-label"><small>Nome:</small> <span class="text-danger">*</span></label>
+                                                    {% comment %} {{ form.envolvido_nome }} {% endcomment %}
+                                                    <input 
+                                                        type="text" 
+                                                        id="{{ form.envolvido_nome.id_for_label }}" 
+                                                        name="{{ form.envolvido_nome.html_name }}" 
+                                                        value="{{ form.envolvido_nome.value|default:"" }}" 
+                                                        class="form-control form-control-sm {% if form.envolvido_nome.errors %} is-invalid {% endif %}"
+                                                    >
+                                                    {%for error in form.envolvido_nome.errors %}
+                                                        <div class="invalid-feedback">
+                                                            {{error}}
+                                                        </div>
+                                                    {%endfor%}
+                                                </div>                                                                               
+                                                <div class="col-12 col-md-4 col-lg-4">
+                                                    <label for="{{ form.envolvido_naturalidade.id_for_label }}" class="form-label">Naturalidade:</label>
+                                                    {{ form.envolvido_naturalidade }}
+                                                </div>                                                                               
+                                                <div class="col-12 col-md-3 col-lg-3">
+                                                    <label for="{{ form.envolvido_datanascimento.id_for_label }}" class="form-label">Data Nascimento:</label>
+                                                    {{ form.envolvido_datanascimento }}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 col-md-5 col-lg-5">
+                                                    <label for="{{ form.envolvido_endereco.id_for_label }}" class="form-label">Endereço:</label>
+                                                    {{ form.envolvido_endereco }}
+                                                </div>
+
+                                                <div class="col-12 col-md-2 col-lg-2">
+                                                    <label for="{{ form.envolvido_numero.id_for_label }}" class="form-label">Numero:</label>
+                                                    {{ form.envolvido_numero }}
+                                                </div>
+
+                                                <div class="col-12 col-md-5 col-lg-5">
+                                                    <label for="{{ form.envolvido_bairro.id_for_label }}" class="form-label">Bairro:</label>
+                                                    {{ form.envolvido_bairro }}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 col-md-4 col-lg-4">
+                                                    <label for="{{ form.envolvido_cidade.id_for_label }}" class="form-label">Cidade:</label>
+                                                    {{ form.envolvido_cidade }}
+                                                </div>
+                                                <div class="col-12 col-md-2 col-lg-2">
+                                                    <label for="{{ form.envolvido_uf.id_for_label }}" class="form-label">UF:</label>
+                                                    {{ form.envolvido_uf }}
+                                                </div>
+                                                <div class="col-12 col-md-3 col-lg-3">
+                                                    <label for="{{ form.envolvido_cep.id_for_label }}" class="form-label">CEP:</label>
+                                                    {{ form.envolvido_cep }}
+                                                </div>
+                                                <div class="col-12 col-md-3 col-lg-3">
+                                                    <label for="{{ form.envolvido_telefone.id_for_label }}" class="form-label">Telefone:</label>
+                                                    {{ form.envolvido_telefone }}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 col-md-4 col-lg-4">
+                                                    <label for="{{ form.envolvido_estadocivil.id_for_label }}" class="form-label">Estado Civil:</label>
+                                                    {{ form.envolvido_estadocivil }}
+                                                </div>
+                                                <div class="col-12 col-md-2 col-lg-2">
+                                                    <label for="{{ form.envolvido_cpf.id_for_label }}" class="form-label">CPF:</label>
+                                                    {{ form.envolvido_cpf }}
+                                                </div>
+                                                <div class="col-12 col-md-3 col-lg-3">
+                                                    <label for="{{ form.envolvido_identidade.id_for_label }}" class="form-label">rg:</label>
+                                                    {{ form.envolvido_identidade }}
+                                                </div>
+                                                <div class="col-12 col-md-3 col-lg-3">
+                                                    <label for="{{ form.envolvido_profissao.id_for_label }}" class="form-label">Profissão:</label>
+                                                    {{ form.envolvido_profissao }}
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-12 col-md-5 col-lg-5 mb-3">
+                                                    <label for="{{ form.envolvido_email.id_for_label }}" class="form-label">Email:</label>
+                                                    {{ form.envolvido_email }}
+                                                </div>
+                                                <div class="col-12 col-md-4 col-lg-4 mb-3">
+                                                    <label for="{{  form.tipo_envolvimento.id_for_label }}" class="form-label">Envolvimento:<span class="text-danger"> *</span></label>
+                                                    {% comment %} {{ form.tipo_envolvimento }} {% endcomment %}
+                                                    <select 
+                                                        id="{{ form.tipo_envolvimento.id_for_label }}" 
+                                                        name="{{ form.tipo_envolvimento.html_name }}"  
+                                                        class="form-select {% if form.tipo_envolvimento.errors %} is-invalid {% endif %}"
+                                                    >
+                                                        <!-- Loop para renderizar as opções dinamicamente -->
+                                                        {% for value, text in form.tipo_envolvimento.field.choices %}
+                                                            <option value="{{ value }}" {% if form.tipo_envolvimento.value == value %}selected{% endif %}>
+                                                                {{ text }}
+                                                            </option>
+                                                        {% endfor %} 
+                                                        
+                                                    </select>
+                                                    {%for error in form.tipo_envolvimento.errors %}
+                                                        <div class="invalid-feedback">
+                                                            {{error}}
+                                                        </div>
+                                                    {%endfor%}
+                                                </div>
+                                                <div class="col-12 col-md-3 col-lg-3 mb-3">
+                                                    <label for="{{ form.envolvido_escolaridade.id_for_label }}" class="form-label">Escolaridade:</label>
+                                                    {{ form.envolvido_escolaridade }}
+                                                </div>                                                
+                                            </div>                                          
+                                            {% if form.can_delete %}
+                                                {{ form.DELETE }} Remover
+                                            {% endif %}
+                                        </fieldset>
+                                        <br>
+
+                                    {% endfor %}
+                                    <button type="submit" name="adicionar_envolvido" class="btn btn-primary">Adicionar mais envolvidos</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Seção 3 historico-->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading3">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse3" aria-expanded="false">
+                            3 - HISTÓRICO
+                            </button>
+                        </h2>
+                        <div id="collapse3" class="accordion-collapse collapse" data-bs-parent="#formAccordion">
+                            <div class="accordion-body">
+                            <div class="mb-3">
+                                <label for="observacoes" class="form-label">Histórico:</label>
+                                <textarea class="form-control" id="observacoes" name="observacoes" rows="10"></textarea>
+                            </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Seção 4 RELATOR -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading4">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse4" aria-expanded="false">
+                            4 - RELATOR
+                            </button>
+                        </h2>
+                        <div id="collapse4" class="accordion-collapse collapse" data-bs-parent="#formAccordion">
+                            <div class="accordion-body">
+                            <div class="row">
+                                    <div class="col-12 col-md-6">
+                                        <label for="{{ forboletim_form.relatornome.id_for_label }}" class="form-label">Nome:</label>
+                                        {{ boletim_form.relatornome }}
+                                    </div>
+
+                                    <div class="col-12 col-md-6">
+                                        <label for="{{ boletim_form.relatordocumento.id_for_label }}" class="form-label">Documento:</label>
+                                        {{ boletim_form.relatordocumento }}
+                                    </div>                                 
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Seção 4  RECIBO AUTORIDADE DESTINO-->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="heading5">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse5" aria-expanded="false">
+                            5 - RECIBO DA AUTORIDADE A QUE SE DESTINA / RESPONSÁVEL REPRESENTANTE
+                            </button>
+                        </h2>
+                        <div id="collapse5" class="accordion-collapse collapse" data-bs-parent="#formAccordion">
+                            <div class="accordion-body">
+                                <div class="row">
+                                        <div class="col-12">
+                                            <label for="{{ forboletim_form.destinatario.id_for_label }}" class="form-label"><small>Destinatário:</small></label>
+                                            {{ boletim_form.destinatario }}
+                                        </div>                                                                      
+                                </div>
+                                <div class="row">
+                                        <div class="col-12 col-md-6">
+                                            <label for="{{ forboletim_form.autoridadenome.id_for_label }}" class="form-label"><small>Nome:</small></label>
+                                            {{ boletim_form.autoridadenome }}
+                                        </div>
+
+                                        <div class="col-12 col-md-6">
+                                            <label for="{{ boletim_formautoridaderdocumento.id_for_label }}" class="form-label"><small>Documento:</small></label>
+                                            {{ boletim_form.autoridadedocumento }}
+                                        </div>                          
+                                </div>
+                            </div>                                
+                        </div>
+                    </div>
                 </div>
-                <button type="submit" name="salvar" class="btn btn-success">Salvar Boletim</button>
-            </form>
+                <div class="container p-3">
+                    <button type="submit" name="salvar" class="btn btn-success">Salvar Boletim</button>
+                    <a href="{% url 'bulletin_list' %}" class="btn btn-secondary">Cancelar e voltar para lista de Boletins</a>         
+                </div>                    
+            </form>                
         </div>
-    </div>
-    <a href="{% url 'brands_list' %}" class="btn btn-secondary mt-3">Cancelar e voltar para lista de Boletins</a>
-</div>
-
+    </div>       
+        
 {% endblock %}

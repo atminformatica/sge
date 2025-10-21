@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+
+  <div class="card">
+      <div class="card-body">
+        <div class="row">
+                <!-- Coluna para a imagem -->
+                <div class="col-md-1">
+                    <img src="{% static 'images/brasao.png' %}" alt="Logo da Empresa" class="img-fluid">
+                </div>
+                <!-- Coluna para o nome da empresa -->
+                <div class="col-md-11 text-center">
+                    <h4>BOLETIM DE INTERVENÇAO</h4>
+                    <h4>GUARDA MUNICIPAL - CONSELHEIRO LAFAIETE</h4>
+                </div>
+        </div>           
+        <form method="post" id="boletim-form" class="needs-validation" novalidate >
+          {% csrf_token %}
+          {% comment %} mostramos os erros do boletim se tiver {% endcomment %}
+          {%for field in form %}
+              {% for error in field.errors %}
+                <div class="invalid-feedback d-block">
+                    {{ field.label_tag }} : {{error}}
+                </div>
+              {%endfor%}                
+          {%endfor%}
+          {% comment %} mostramos os erros dos envolvidos {% endcomment %}
+          {% for envolvimento in envolvimentos %}
+            {%for field in envolvimento %}
+                {% for error in field.errors %}
+                  <div class="invalid-feedback d-block">
+                      Envolvido {{ forloop.parentloop.parentloop.counter }}-{{ field.label_tag }} : {{error}}
+                  </div>
+                {% endfor %}                
+            {% endfor %}
+          {% endfor %}
+          <div class="fundoazul mb-1 mt-3">
+            1 - DO FATO
+          </div>               
+          <div class="row">                                     
+            <div class="col-12 col-md-4 col-lg-3 ">
+              <label for="{{ bulletin.created_at.id_for_label }}" class="form-label mb-0"><small>Data do Registro (automático)</small></label>
+              <input disabled readonly name="{{ bulletin.created_at.html_name }}" value="{{ bulletin.created_at|date:'d/m/Y'}}" class="form-control form-control-sm" >
+            </div>
+            <div class="col-12 col-md-4 col-lg-3 ">              
+              <label for="{{ form.numero_bi.id_for_label }}" class="form-label mb-0"><small>Número BI:</small></label>
+              <input name="{{ form.numero_bi.html_name }}" value="{{ form.numero_bi.value|default_if_none:'' }}"  class="form-control form-control-sm ">
+            </div>
+            <div class="col-12 col-md-4 col-lg-3 ">
+              <label for="{{ form.numero_bo.id_for_label }}" class="form-label mb-0"><small>Número BO:</small></label>
+              <input name="{{ form.numero_bo.html_name }}" value="{{ form.numero_bo.value|default_if_none:'' }}"  class="form-control form-control-sm">
+            </div>
+            <div class="col-12 col-md-4 col-lg-3 ">
+              <label for="{{ form.created_at.id_for_label }}" class="form-label mb-0"><small>Classificação:</small></label>
+              <input name="{{ form.classificacao.html_name }}" value="{{ form.classificacao.value|default_if_none:'' }}"  class="form-control form-control-sm">
+            </div>
+          </div>
+          
+          <div class="row">
+            <div class="col-12 col-md-5 col-lg-5 ">
+                <label for="{{ form.endereco_dofato.id_for_label }}" class="form-label mb-0"><small>Endereço:</small></label>
+                <input name="{{ form.endereco_dofato.html_name }}" value="{{ form.endereco_dofato.value|default_if_none:'' }}"  class="form-control form-control-sm">
+            </div>
+
+            <div class="col-12 col-md-2 col-lg-2 ">
+                <label for="{{ form.numero_dofato.id_for_label }}" class="form-label mb-0"><small>Número:</small></label>
+                <input name="{{ form.numero_dofato.html_name }}" value="{{ form.numero_dofato.value|default_if_none:'' }}"  class="form-control form-control-sm">
+            </div>
+
+            <div class="col-12 col-md-5 col-lg-5 ">
+                <label for="{{ form.bairro_dofato.id_for_label }}" class="form-label mb-0"><small>Bairro:</small></label>
+                <input name="{{ form.bairro_dofato.html_name }}" value="{{ form.bairro_dofato.value|default_if_none:'' }}" class="form-control form-control-sm">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 col-md-4 col-lg-3 ">
+              <label for="{{ form.orgao.id_for_label }}" class="form-label mb-0"><small>Órgão:</small></label>
+              <input name="{{ form.orgao.html_name }}" value="{{ form.orgao.value|default_if_none:'' }}" class="form-control form-control-sm">
+            </div>
+
+            <div class="col-12 col-md-4 col-lg-3 ">
+              <label for="{{ form.secao.id_for_label }}" class="form-label mb-0"><small>Seção:</small></label>
+              <input name="{{ form.secao.html_name }}" value="{{ form.secao.value|default_if_none:'' }}" class="form-control form-control-sm">
+            </div>
+
+            <div class="col-12 col-md-4 col-lg-3 ">
+              <label for="{{ form.data_hora_inicio.id_for_label }}" class="form-label mb-0"><small>Data/Hora Início:</small></label>
+              {% comment %} <input  name="{{ form.data_hora_inicio.html_name }}" value="{{ form.data_hora_inicio.value|default_if_none:'' }}" class="form-control form-control-sm "> {% endcomment %}
+              {{ form.data_hora_inicio }}
+            </div>
+
+            <div class="col-12 col-md-4 col-lg-3 ">
+              <label for="{{ form.data_hora_termino.id_for_label }}" class="form-label mb-0"><small>Data/Hora Término:</small></label>
+              {{ form.data_hora_termino }}
+            </div>
+          </div>
+          <div class="fundoazul mb-1 mt-3">
+            2 - ENVOLVIDOS
+          </div>    
+
+          <div id="envolvimento-formset">      
+            <div id="envolvimento-forms">
+              {{ envolvimentos.management_form }}
+              <div id="formset-container"> 
+                {% for envolvimento in envolvimentos %}
+                  <!-- esse id é um campo oculto e precisa ficar aqui pra ser enviado junto com cada formulario  -->  
+                  {{ envolvimento.id }}  
+                              
+                  <div class="form-row">   
+                    <div class="envolvido-label fundoazul mb-0 mt-1">
+                      <small>Envolvido {{ forloop.counter }}</small>
+                    </div>                                           
+                    {%for field in envolvimento %}
+                        {% for error in field.errors %}
+                          <div class="invalid-feedback d-block">
+                              {{ field.label_tag }} : {{error}}
+                          </div>
+                        {% endfor %}                
+                    {% endfor %}
+                    
+                    <div class="row">               
+                      <div class="col-12 col-md-5 col-lg-5 ">
+                        <label for="{{ envolvimento.envolvido_nome.id_for_label }}" class="form-label mb-0"><small>Nome</small></label>
+                        <input name="{{ envolvimento.envolvido_nome.html_name }}" value="{{ envolvimento.envolvido_nome.value|default_if_none:'' }}"  class="form-control form-control-sm">
+                      </div>
+                                                                                                      
+                      <div class="col-12 col-md-4 col-lg-4 ">
+                        <label for="{{ envolvimento.envolvido_naturalidade.id_for_label }}" class="form-label mb-0"><small>Naturalidade:</small></label>
+                        <input name="{{ envolvimento.envolvido_naturalidade.html_name }}" value="{{ envolvimento.envolvido_naturalidade.value|default_if_none:''  }}"  class="form-control form-control-sm">
+                      </div> 
+
+                      <div class="col-12 col-md-3 col-lg-3">
+                        <label for="{{envolvimento.envolvido_datanascimento.id_for_label }}" class="form-label mb-0"><small>Data de Nascimento:</small></label>
+                        {{ envolvimento.envolvido_datanascimento}}
+                      </div>
+                    </div>
+                    
+                    <div class="row">
+                      <div class="col-12 col-md-5 col-lg-5 ">
+                        <label for="{{ envolvimento.envolvido_endereco.id_for_label }}" class="form-label mb-0"><small>Endereço:</small></label>
+                        <input name="{{ envolvimento.envolvido_endereco.html_name }}" value="{{ envolvimento.envolvido_endereco.value|default_if_none:''  }}"  class="form-control form-control-sm">
+                      </div>
+
+                      <div class="col-12 col-md-2 col-lg-2 ">
+                        <label for="{{ envolvimento.envolvido_numero.id_for_label }}" class="form-label mb-0"><small>Número:</small></label>
+                        <input name="{{ envolvimento.envolvido_numero.html_name }}" value="{{ envolvimento.envolvido_numero.value|default_if_none:''  }}"  class="form-control form-control-sm">
+                      </div>
+
+                      <div class="col-12 col-md-5 col-lg-5 ">
+                        <label for="{{ envolvimento.envolvido_bairro.id_for_label }}" class="form-label mb-0"><small>Bairro:</small></label>
+                        <input name="{{ envolvimento.envolvido_bairro.html_name }}" value="{{ envolvimento.envolvido_bairro.value|default_if_none:''  }}"  class="form-control form-control-sm">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 col-md-4 col-lg-4">
+                        <label for="{{ envolvimento.envolvido_cidade.id_for_label }}" class="form-label mb-0"><small>Cidade:</small></label>
+                        <input name="{{ envolvimento.envolvido_cidade.html_name }}" value="{{ envolvimento.envolvido_cidade.value|default_if_none:''  }}"  class="form-control form-control-sm">
+                      </div>
+                      <div class="col-12 col-md-2 col-lg-2">
+                        <label for="{{ envolvimento.envolvido_uf.id_for_label }}" class="form-label mb-0"><small>UF:</small></label>
+                        <input name="{{ envolvimento.envolvido_uf.html_name }}" value="{{ envolvimento.envolvido_uf.value|default_if_none:''  }}"  class="form-control form-control-sm uf-maiusculo">
+                      </div>
+                      <div class="col-12 col-md-3 col-lg-3">
+                        <label for="{{ envolvimento.envolvido_cep.id_for_label }}" class="form-label mb-0"><small>Cep:</small></label>
+                        <input name="{{ envolvimento.envolvido_cep.html_name }}" value="{{ envolvimento.envolvido_cep.value|default_if_none:''  }}"  class="form-control form-control-sm cep_mask">
+                      </div>
+                      <div class="col-12 col-md-3 col-lg-3">
+                        <label for="{{ envolvimento.envolvido_telefone.id_for_label }}" class="form-label mb-0"><small>Telefone:</small></label>
+                        <input name="{{ envolvimento.envolvido_telefone.html_name }}" value="{{ envolvimento.envolvido_telefone.value|default_if_none:'' }}"  class="form-control form-control-sm mask-telefone">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 col-md-4 col-lg-4">
+                        <label for="{{ envolvimento.envolvido_estadocivil.id_for_label }}" class="form-label mb-0"><small>Estado Civil:</small></label>
+                        <input name="{{ envolvimento.envolvido_estadocivil.html_name }}" value="{{ envolvimento.envolvido_estadocivil.value|default_if_none:''  }}"  class="form-control form-control-sm">
+                      </div>
+                      <div class="col-12 col-md-2 col-lg-2">
+                        <label for="{{ envolvimento.envolvido_cpf.id_for_label }}" class="form-label mb-0"><small>CPF:</small></label>
+                        <input onblur="buscarEnvolvido(this)" name="{{ envolvimento.envolvido_cpf.html_name }}" value="{{ envolvimento.envolvido_cpf.value|default_if_none:''  }}"  class="form-control form-control-sm cpf_mask">
+                      </div>
+                      <div class="col-12 col-md-3 col-lg-3">
+                        <label for="{{ envolvimento.envolvido_identidade.id_for_label }}" class="form-label mb-0"><small>Identidade:</small></label>
+                        <input name="{{ envolvimento.envolvido_identidade.html_name }}" value="{{ envolvimento.envolvido_identidade.value|default_if_none:'' }}"  class="form-control form-control-sm">
+                      </div>
+                      <div class="col-12 col-md-3 col-lg-3">
+                        <label for="{{ envolvimento.envolvido_profissao.id_for_label }}" class="form-label mb-0"><small>Profissão:</small></label>
+                        <input name="{{ envolvimento.envolvido_profissao.html_name }}" value="{{ envolvimento.envolvido_profissao.value|default_if_none:''  }}"  class="form-control form-control-sm">
+                      </div>
+                    </div>
+                    <div class="row">
+                      <div class="col-12 col-md-5 col-lg-5">
+                        <label for="{{ envolvimento.envolvido_email.id_for_label }}" class="form-label mb-0"><small>Email:</small></label>
+                        <input type="email" name="{{ envolvimento.envolvido_email.html_name }}" value="{{ envolvimento.envolvido_email.value|default_if_none:''  }}"  class="form-control form-control-sm ">
+                      </div>                               
+                      <div class="col-12 col-md-4 col-lg-4">
+                        <label for="{{  envolvimento.tipo_envolvimento.id_for_label }}" class="form-label mb-0"><small>Tipo de Envolvimento:</small></label>
+                        <select 
+                            id="{{ envolvimento.tipo_envolvimento.id_for_label }}" 
+                            name="{{ envolvimento.tipo_envolvimento.html_name }}"  
+                            class="form-select form-control-sm {% if envolvimento.tipo_envolvimento.errors %} is-invalid {% endif %}"
+                        >
+                            <!-- Loop para renderizar as opções dinamicamente -->
+                            {% for value, text in envolvimento.tipo_envolvimento.field.choices %}
+                                <option value="{{ value }}" {% if envolvimento.tipo_envolvimento.value == value %}selected{% endif %}>
+                                    {{ text }}
+                                </option>
+                            {% endfor %}                         
+                            
+                        </select>
+                        {%for error in envolvimento.tipo_envolvimento.errors %}
+                            <div class="invalid-feedback">
+                                {{error}}
+                            </div>
+                        {%endfor%}
+                    </div>
+                      <div class="col-12 col-md-3 col-lg-3">
+                        <label for="{{ envolvimento.envolvido_escolaridade.id_for_label }}" class="form-label mb-0"><small>Escolaridade:</small></label>
+                        <input name="{{ envolvimento.envolvido_escolaridade.html_name }}" value="{{ envolvimento.envolvido_escolaridade.value|default_if_none:''  }}"  class="form-control form-control-sm">
+                      </div>                                                
+                    </div>                  
+                  </div>                  
+                {% endfor %}
+              </div>
+            </div>
+          </div>
+
+          <div class="fundoazul mb-1 mt-3">
+            3 - HISTÓRICO
+          </div>
+          <div class="row">
+              <div class="col-12">
+                  <label for="{{ form.historico.id_for_label }}" class="form-label mb-0"><small>Histórico:</small></label>
+                  <textarea class="form-control" id="form.historico.id_for_label" name="{{ form.historico.html_name }}" rows="10">{{ form.historico.value|default_if_none:''}}</textarea>
+              </div>                    
+          </div>
+          <div class="fundoazul mb-1 mt-3">
+            4 - RELATOR
+          </div>
+          <div class="row">
+            <div class="col-12 col-md-6 mb-3">
+              <label for="{{ form.relatornome.id_for_label }}" class="form-label mb-0"><small>Nome:</small></label>
+              <input name="{{ form.relatornome.html_name }}" value="{{ form.relatornome.value|default_if_none:'' }}"  class="form-control form-control-sm">
+            </div>
+
+            <div class="col-12 col-md-6 mb-3">
+              <label for="{{ form.relatordocumento.id_for_label }}" class="form-label mb-0"><small>Documento:</small></label>
+              <input name="{{ form.relatordocumento.html_name }}" value="{{ form.relatordocumento.value|default_if_none:'' }}"  class="form-control form-control-sm">
+            </div>                                 
+          </div>
+          
+          <div class="fundoazul mb-1 mt-3">
+            5 - RECIBO DA AUTORIDADE A QUE SE DESTINA / RESPONSÁVEL REPRESENTANTE
+          </div>
+          <div class="row">
+            <div class="col-12 mb-3">
+              <label for="{{ form.destinatario.id_for_label }}" class="form-label mb-0"><small>Destinatário:</small></label>
+              <input name="{{ form.destinatario.html_name }}" value="{{ form.autoridadenome.value|default_if_none:'' }}"  class="form-control form-control-sm">
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-12 col-md-6 mb-3">
+              <label for="{{ form.autoridadenome.id_for_label }}" class="form-label mb-0"><small>Nome:</small></label>
+              <input name="{{ form.autoridadenome.html_name }}" value="{{ form.autoridadenome.value|default_if_none:'' }}"  class="form-control form-control-sm">
+            </div>
+
+            <div class="col-12 col-md-6 mb-3">
+              <label for="{{ form.autoridadedocumento.id_for_label }}" class="form-label mb-0"><small>Documento:</small></label>
+              <input name="{{ form.autoridadedocumento.html_name }}" value="{{ form.autoridadedocumento.value|default_if_none:'' }}"  class="form-control form-control-sm">
+            </div>                                 
+          </div>
+          
+          <button type="submit" class="btn btn-success">Salvar Alterações</button>
+          <a href="{% url 'bulletin_list' %}" class="btn btn-secondary">Cancelar</a>
+        </form>
+      </div>
+  </div> 
+  <!-- Formulário vazio para clonagem (hidden) -->
+  <div class="envolvimento-form border p-3 mb-3 d-none" id="empty-form">
+    {{ envolvimento_formset.empty_form.as_p|safe }}
+  </div>
+
+{% endblock %}
+
+{% block extra_js %}
+  <!-- Inclua o cdn jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+  <!-- Inclua o cdn  jquery-formset -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.formset/1.2.2/jquery.formset.min.js"></script>
+  <!-- Inclua o cdn  jquery-mask -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+   
+
+  <script type="text/javascript">
+      $(function() {
+        //mascaras usando jquery mask
+        // Máscara para Data (DD/MM/AAAA)
+        $('.mask-data').mask('00/00/0000');
+
+        // Máscara para Data e Hora (DD/MM/AAAA HH:MM:SS)
+        $('.mask-datetime').mask('00/00/0000 00:00');
+
+        // Máscara para Telefone (com 9º dígito opcional)
+        // A lógica `onKeyPress` alterna a máscara dependendo do número de dígitos
+        var maskBehavior = function (val) {
+            return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+        },
+        options = {onKeyPress: function(val, e, field, options) {
+            field.mask(maskBehavior.apply({}, arguments), options);
+        }};
+        $('.mask-telefone').mask(maskBehavior, options);
+
+        // Forçar letras maiúsculas para o campo de estado
+        $('.uf-maiusculo').mask('AA');
+        $('.uf-maiusculo').keyup(function(){
+            $(this).val($(this).val().toUpperCase());
+        });
+
+        $('.cpf_mask').mask('000.000.000-00', {reverse: true});
+        $('.cep_mask').mask('00000-000');
+        //atualiza div que informa o numero do envolvido
+        function atualizarNumeracaoEnvolvidos() {
+          $('.envolvido-label').each(function(index) {
+            $(this).text('Envolvido ' + (index + 1));
+          });
+        }
+        // Selecione as divs que representam as linhas do formset
+        $('#formset-container .form-row').formset({
+            prefix: '{{ envolvimentos.prefix }}',
+            addText: '<button type="button" class="btn btn-primary btn-sm mt-2">+ Adicionar Envolvido</button>',
+            addCssClass: 'add-row-btn',
+            deleteCssClass: 'delete-row-btn',
+            deleteText: '<button type="button" class="btn btn-danger btn-sm mt-2">Remover Envolvido</button>',
+
+            added: function (row) {
+              atualizarNumeracaoEnvolvidos();
+              // Limpa os campos do novo formulário
+              row.find('input, textarea').val(''); // limpa todos os inputs
+              row.find('select').each(function () {
+                $(this).val(''); // desmarca qualquer opção selecionada
+              });
+            },
+            removed: atualizarNumeracaoEnvolvidos,
+        });
+        
+        atualizarNumeracaoEnvolvidos();
+      });
+
+      function getCSRFToken() {
+        return document.querySelector('[name=csrfmiddlewaretoken]').value;
+      }
+      
+      function buscarEnvolvido(campoCpf) {
+        var cpf = $(campoCpf).val().replace(/\D/g, '');
+        if (!cpf || cpf.length < 11) return;
+
+        var nomeCampo = $(campoCpf).attr('name');  // ex: form-2-envolvido_cpf
+        var prefixo = nomeCampo.split('-').slice(0, 2).join('-');  // "form-2"
+
+        $.ajax({
+            url: '/buscar-envolvido/',
+            type: 'POST',
+            data: {
+                'cpf': cpf,
+                'csrfmiddlewaretoken': getCSRFToken()
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data.error) {
+                    alert(data.error);
+                    return;
+                }
+
+                $('[name="' + prefixo + '-envolvido_nome"]').val(data.nome);
+                $('[name="' + prefixo + '-envolvido_naturalidade"]').val(data.naturalidade);
+                $('[name="' + prefixo + '-envolvido_datanascimento"]').val(data.datanascimento);
+                $('[name="' + prefixo + '-envolvido_endereco"]').val(data.endereco);
+                $('[name="' + prefixo + '-envolvido_numero"]').val(data.numero);
+                $('[name="' + prefixo + '-envolvido_bairro"]').val(data.bairro);
+                $('[name="' + prefixo + '-envolvido_cidade"]').val(data.cidade);
+                $('[name="' + prefixo + '-envolvido_uf"]').val(data.uf);
+                $('[name="' + prefixo + '-envolvido_cep"]').val(data.cep);
+                $('[name="' + prefixo + '-envolvido_telefone"]').val(data.telefone);
+                $('[name="' + prefixo + '-envolvido_estadocivil"]').val(data.estadocivil);
+                $('[name="' + prefixo + '-envolvido_identidade"]').val(data.identidade);
+                $('[name="' + prefixo + '-envolvido_profissao"]').val(data.profissao);
+                $('[name="' + prefixo + '-envolvido_email"]').val(data.email);
+                $('[name="' + prefixo + '-envolvido_escolaridade"]').val(data.escolaridade);
+            },
+            error: function(xhr) {
+                alert('Erro ao buscar dados');
+                console.error(xhr);
+            }
+        });
+      }
+  </script>
+{% endblock %}
