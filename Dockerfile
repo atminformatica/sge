@@ -25,44 +25,29 @@
 
 
 #dockerfile para produçao no easypanel
+# Usando 3.12 para evitar bugs do Debian Trixie/Python 3.13
+FROM python:3.12-slim
 
-# Utilizando a versão estável do Python 3.13 de 2025
-FROM python:3.13-slim
-
-# Definir o diretório de trabalho
-WORKDIR /sge
-
-# Variáveis de ambiente para Python
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
-
-# Instalação de dependências do sistema
-# O PostgreSQL exige bibliotecas cliente para o adaptador 'psycopg2' ou 'psycopg'
+# Instala dependências de compilação essenciais para o Postgres
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     libpq-dev \
     gcc \
     && rm -rf /var/lib/apt/lists/*
 
-# Atualizar pip e instalar dependências do projeto
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
+WORKDIR /sge
 
-# Instalar o Gunicorn (servidor de produção)
+# Instala as dependências Python
+COPY requirements.txt .
+RUN pip install --no-cache-dir --upgrade pip
+RUN pip install --no-cache-dir -r requirements.txt
 RUN pip install --no-cache-dir gunicorn
 
-# Copiar o restante do código do projeto
+# Copia o código
 COPY . .
 
-# Coletar arquivos estáticos (essencial para produção)
-# Certifique-se de que STATIC_ROOT está configurado no seu settings.py
-# RUN python manage.py collectstatic --noinput
-
-# Porta interna do container
+# Expõe a porta 8000
 EXPOSE 8000
 
-# Comando de execução usando Gunicorn para estabilidade e performance
-# Substitua 'seu_projeto' pelo nome da pasta que contém o arquivo wsgi.py
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "app.wsgi:application"]
-
+# Comando final (ajuste 'app' para o nome da sua pasta de settings)
+CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "2", "app.wsgi:application"]
