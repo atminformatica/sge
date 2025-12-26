@@ -1,14 +1,6 @@
 docker ja funcionando
 
-falta:
-
-JOGAR PROJETO NO GITHUB
-
 lembrando
-    sge original esta copiado na pasta rede
 
         apos copiar pra outra maquina tem que criar a venv, ativar , instalar o requirements.txt
         
-    criei projetos pessoas e participacoes ta tudo no app brands aqui
-
-    se quizer desfazer so voltar a pasta sge que esta na pasta rede
