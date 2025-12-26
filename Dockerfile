@@ -27,24 +27,12 @@
 #dockerfile para produçao no easypanel
 # Usando 3.12 para evitar bugs do Debian Trixie/Python 3.13
 FROM python:3.12-slim
-
-# Instala dependências de compilação essenciais para o Postgres
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    libpq-dev \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
 WORKDIR /sge
-
-# Instala as dependências Python
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir gunicorn
-
-# Copia o código
 COPY . .
+
+RUN pip install --upgrade pip
+RUN pip install -r requirements.txt
+RUN pip install gunicorn
 
 # Expõe a porta 8000
 EXPOSE 8000
