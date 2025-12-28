@@ -1,11 +1,26 @@
 [phases.setup]
-# Adicionamos bibliotecas necessárias para PDF, Imagens e Cairo
-nixPkgs = ["python3", "gcc", "cairo", "pango", "pkg-config", "freetype", "libjpeg", "zlib"]
+# Adicionamos ninja e meson para permitir a compilação do pycairo
+nixPkgs = [
+    "python3", 
+    "gcc", 
+    "cairo", 
+    "pango", 
+    "pkg-config", 
+    "freetype", 
+    "libjpeg", 
+    "zlib", 
+    "ninja", 
+    "meson"
+]
 
 [phases.install]
-# Forçamos a instalação das dependências do requirements
-cmds = ["python -m venv /opt/venv && /opt/venv/bin/pip install --upgrade pip && /opt/venv/bin/pip install -r requirements.txt"]
+# Instalamos as dependências do Python
+cmds = [
+    "python -m venv /opt/venv",
+    "/opt/venv/bin/pip install --upgrade pip",
+    "/opt/venv/bin/pip install -r requirements.txt"
+]
 
 [start]
-# Comando para rodar as migrações no banco SQLite e iniciar o servidor
+# Rodamos as migrações e iniciamos o gunicorn
 cmd = "/opt/venv/bin/python manage.py migrate && /opt/venv/bin/gunicorn app.wsgi:application --bind 0.0.0.0:$PORT"
