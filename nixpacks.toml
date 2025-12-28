@@ -1,24 +1,12 @@
 [phases.setup]
-# Adicionamos bibliotecas de sistema e garantimos as versões de desenvolvimento (.dev)
-nixPkgs = [
-    "python3", 
-    "gcc", 
-    "pkg-config", 
-    "cairo", 
-    "pango", 
-    "glib",
-    "ninja", 
-    "meson"
-]
+nixPkgs = ["python3", "gcc", "libjpeg", "zlib", "freetype"]
 
 [phases.install]
-# Definimos o caminho onde o pkg-config deve procurar as bibliotecas no Nix
 cmds = [
     "python -m venv /opt/venv",
     "/opt/venv/bin/pip install --upgrade pip",
-    "export PKG_CONFIG_PATH=$PKG_CONFIG_PATH:/usr/lib/pkgconfig:/usr/share/pkgconfig:/root/.nix-profile/lib/pkgconfig",
     "/opt/venv/bin/pip install -r requirements.txt"
 ]
 
 [start]
-cmd = "/opt/venv/bin/python manage.py migrate && /opt/venv/bin/gunicorn app.wsgi:application --bind 0.0.0.0:$PORT"
+cmd = "/opt/venv/bin/python manage.py collectstatic --noinput && /opt/venv/bin/python manage.py migrate && /opt/venv/bin/gunicorn app.wsgi:application --bind 0.0.0.0:$PORT"
