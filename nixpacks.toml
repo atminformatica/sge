@@ -1,22 +1,18 @@
 [phases.setup]
+# Adicionamos bibliotecas de sistema e garantimos as versões de desenvolvimento (.dev)
 nixPkgs = [
     "python3", 
     "gcc", 
     "pkg-config", 
-    "cmake",
     "cairo", 
     "pango", 
-    "freetype", 
-    "libjpeg", 
-    "zlib", 
+    "glib",
     "ninja", 
-    "meson",
-    "libffi",
+    "meson"
 ]
 
 [phases.install]
-# Definimos as variáveis de ambiente diretamente na fase de instalação
-# para que o pip e o meson encontrem os pacotes do Nix
+# Definimos o caminho onde o pkg-config deve procurar as bibliotecas no Nix
 cmds = [
     "python -m venv /opt/venv",
     "/opt/venv/bin/pip install --upgrade pip",
