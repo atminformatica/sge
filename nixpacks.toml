@@ -10,7 +10,8 @@ nixPkgs = [
     "libjpeg", 
     "zlib", 
     "ninja", 
-    "meson"
+    "meson",
+    "libffi",
 ]
 
 [phases.install]
