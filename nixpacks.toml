@@ -1,20 +1,23 @@
 [phases.setup]
-# Adicionamos ninja e meson para permitir a compilação do pycairo
+# Usamos .dev para garantir que os headers de compilação estejam presentes
 nixPkgs = [
     "python3", 
     "gcc", 
-    "cairo", 
-    "pango", 
     "pkg-config", 
-    "freetype", 
-    "libjpeg", 
-    "zlib", 
+    "cairo.dev", 
+    "pango.dev", 
+    "freetype.dev", 
+    "libjpeg.dev", 
+    "zlib.dev", 
     "ninja", 
     "meson"
 ]
 
+[variables]
+# Ajuda o pkg-config a localizar as bibliotecas no ambiente Nix
+PKG_CONFIG_PATH = "/root/.nix-profile/lib/pkgconfig"
+
 [phases.install]
-# Instalamos as dependências do Python
 cmds = [
     "python -m venv /opt/venv",
     "/opt/venv/bin/pip install --upgrade pip",
@@ -22,5 +25,4 @@ cmds = [
 ]
 
 [start]
-# Rodamos as migrações e iniciamos o gunicorn
 cmd = "/opt/venv/bin/python manage.py migrate && /opt/venv/bin/gunicorn app.wsgi:application --bind 0.0.0.0:$PORT"
