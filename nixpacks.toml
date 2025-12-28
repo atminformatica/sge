@@ -1,10 +1,19 @@
 [phases.setup]
-nixPkgs = ["python3", "gcc", "libjpeg", "zlib", "freetype"]
+# Adicionamos pacotes que fornecem os headers necessários para o ReportLab 3.6
+nixPkgs = [
+    "python3", 
+    "gcc", 
+    "binutils",
+    "gnumake",
+    "libjpeg", 
+    "zlib", 
+    "freetype"
+]
 
 [phases.install]
 cmds = [
     "python -m venv /opt/venv",
-    "/opt/venv/bin/pip install --upgrade pip",
+    "/opt/venv/bin/pip install --upgrade pip setuptools wheel",
     "/opt/venv/bin/pip install -r requirements.txt"
 ]
 
