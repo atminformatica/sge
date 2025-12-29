@@ -19,7 +19,8 @@ SECRET_KEY =os.getenv('SECRET_KEY') #'django-insecure-qq28_-gw_$b4s+_#)ml-%e(ksr
 DEBUG = os.getenv('DEBUG')
 
 #ALLOWED_HOSTS = []
-ALLOWED_HOSTS = ['*']
+#ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['sge.atminformaticasistemasweb.com', 'localhost', '127.0.0.1']
 # ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS','').split(',') 
 
 # Substitua pelo IP que aparece no seu erro
@@ -106,6 +107,7 @@ if ENVIRONMENT == 'prd':
             'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
             'HOST': os.getenv('POSTGRES_HOST'),
             'PORT': os.getenv('POSTGRES_PORT'),
+            'CONN_MAX_AGE': 600,  # Mantém a conexão aberta por 10 minutos
         }
     }
 else:
