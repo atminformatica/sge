@@ -23,6 +23,17 @@ DEBUG = os.getenv('DEBUG')
 ALLOWED_HOSTS = ['*']
 # ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS','').split(',') 
 
+# Substitua pelo IP que aparece no seu erro
+CSRF_TRUSTED_ORIGINS = [
+    'https://192.168.2.147',
+    'http://192.168.2.147',
+]
+# Indica ao Django que ele está atrás de um proxy que gerencia o SSL
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+# Garante que o Django aceite cookies de sessão e CSRF apenas via HTTPS (se você estiver usando HTTPS)
+# Se você estiver testando apenas em HTTP local, pode deixar False por enquanto
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 
