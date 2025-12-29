@@ -65,6 +65,12 @@ RUN pip install --no-cache-dir --upgrade pip && \
 
 COPY . .
 
+# Cria a pasta data e garante permissões totais
+RUN mkdir -p /sge/data && chmod 777 /sge/data
+
+# Se o arquivo já existir no seu código local, dê permissão a ele também
+RUN touch /sge/data/db.sqlite3 && chmod 666 /sge/data/db.sqlite3
+
 EXPOSE 8000
 
 CMD python manage.py migrate --noinput && \
