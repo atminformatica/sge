@@ -35,9 +35,17 @@ ENV PYTHONUNBUFFERED=1
 
 # Instalação de dependências para Debian Trixie (Dezembro/2025)
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    # --- Ferramentas de Monitoramento e Diagnóstico ---
+    nano \
+    curl \
+    net-tools \
+    procps \
+    iputils-ping \
+     # --- Dependências de Compilação e Banco de Dados ---
     build-essential \
     libpq-dev \
     gcc \
+     # --- Dependências Gráficas (Cairo, Pango, Pixbuf para PDFs/Imagens) ---
     libcairo2 \
     libcairo2-dev \
     libpango-1.0-0 \
